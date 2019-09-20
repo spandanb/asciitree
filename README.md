@@ -1,13 +1,13 @@
 Ascii Tree
 ==========
 
-Generate beautiful Ascii trees
+Generate beautiful ascii trees.
 
-Boxes can have be upto max width, beyond which
-the text is wrapped.
+Boxes/nodes can have be upto max width, beyond which
+their contents are wrapped.
 
 If a tree is too wide, then it is split at a node.
-Practically, this means that some children go on side
+Practically, this means that some children go one side
 of the split, and the rest on the other side.
 When a node is split, an information box is added as
 a child to the node, which shows the page number where tree is continued.
@@ -15,16 +15,18 @@ a child to the node, which shows the page number where tree is continued.
 Installation
 ============
 `git clone ...`
+
 `cd ....`
+
 `python3 setup.py install`
 
 
 Usage
 =====
-This library can print arbitrary trees. This requires
+This library can print **arbitrary** trees. This requires
 you to specify how the value of a node, and list
 of it's children can be extracted from the node object.
-For example, for the following binary tree node class
+For example, consider the following binary tree node class
 ```
 class BinaryTreeNode:
     def __init__(self, value):
@@ -48,10 +50,21 @@ def get_children(node):
         children.append(node.right)
     return children
 ```
+First we'll construct a dummy tree.
+```
+root = BinaryTreeNode(1)
+root.left = BinaryTreeNode(2)
+root.right = BinaryTreeNode(3)
+root.left.left = BinaryTreeNode(4)
+root.left.right = BinaryTreeNode(5)
+root.right.left = BinaryTreeNode(6)
+root.right.right = BinaryTreeNode(7)
+```
 Now we can print this as an ascii tree like
 ```
 >>> from ascii_tree import make_and_print_tree
->>>make_and_print_tree(root, get_value, get_children)
+>>> make_and_print_tree(root, get_value, get_children)
+>>>
 page: 0
           ------
           |    |
@@ -81,3 +94,7 @@ page: 0
 ```
 
 See more examples [here](./examples)
+
+Notes
+=====
+- only supports `python3`
