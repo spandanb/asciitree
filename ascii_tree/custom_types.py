@@ -1,7 +1,7 @@
 import math
 from collections import namedtuple, deque
 from copy import copy
-from .constants import SCREEN_WIDTH, MARGIN, PADDING, BOX_MAX_WIDTH
+from .constants import PADDING, BOX_MAX_WIDTH
 
 # position offset
 Offset = namedtuple('Offset', 'left top')
@@ -15,12 +15,13 @@ class Node:
         self.box = None
 
     @classmethod
-    def init_with_box(cls, val):
+    def init_with_box(cls, val, **kwargs):
         '''
         construct Node with associated AsciiBox
+        accepts kwargs to be passed to AsciiBox constructor
         '''
         node = cls(val)
-        node.box = AsciiBox(node.val)
+        node.box = AsciiBox(node.val, **kwargs)
         return node
 
     def __repr__(self):
@@ -48,7 +49,7 @@ class AsciiBox:
     Holds parameters associated with drawing
     ascii box for some block of text.
     '''
-    def __init__(self, text: str):
+    def __init__(self, text: str, box_max_width: int=BOX_MAX_WIDTH, padding: int=PADDING):
         self.text = text
         # width of encapsulating box (includes border chars)
         self.box_width = None
@@ -58,7 +59,8 @@ class AsciiBox:
         self.box_height = None
         # height of contents
         self.content_height = None
-        self.box_width, self.line_width, self.box_height, self.content_height = self.box_dims(text)
+        self.box_width, self.line_width, self.box_height, self.content_height = \
+            self.box_dims(text, box_max_width, padding)
         # width of tree rooted at node
         # should be updated with a get_node_widths
         # TODO: update to tree_width
@@ -77,7 +79,7 @@ class AsciiBox:
     def width(self):
         return self.box_width
 
-    def box_dims(self, text: str, box_max_width: int=BOX_MAX_WIDTH, padding: int=PADDING):
+    def box_dims(self, text: str, box_max_width: int, padding: int):
         '''
         determine the box_width (width including border chars)
         and the line_width (number of text chars)

@@ -12,7 +12,7 @@ be placed on the screen.
 import math
 from copy import copy
 from typing import List, Callable
-from .constants import SCREEN_WIDTH, MARGIN, PADDING, BOX_MAX_WIDTH, SHOW_CONT_DIALOG
+from .constants import SCREEN_WIDTH, MARGIN, PADDING, SHOW_CONT_DIALOG
 from .custom_types import Node, Offset, AsciiBox
 from .draw import draw
 
@@ -21,10 +21,11 @@ def get_margin(node_count: int, margin: int=MARGIN)->float:
     '''
     determine the amount of margin for node_count
     '''
+    # return config.margin*(node_count-1)
     return margin*(node_count-1)
 
 
-def recomp_node_width(root: Node, add_on: Node=None)->int:
+def recomp_node_width(root: Node, add_on: Node=None, margin: int=MARGIN)->int:
     '''
     Similar to get_node_widths, but only
     computes the width of a single node.
@@ -38,10 +39,10 @@ def recomp_node_width(root: Node, add_on: Node=None)->int:
 
     if add_on:
         total_width = sum(child.box.total_width for child in root.children) + \
-            + get_margin(len(root.children) + 1) + add_on.box.total_width
+            + get_margin(len(root.children) + 1, margin) + add_on.box.total_width
     else:
         total_width = sum(child.box.total_width for child in root.children) + \
-            + get_margin(len(root.children))
+            + get_margin(len(root.children), margin)
 
     total_width = max(total_width, root.box.width)
     return total_width
@@ -65,9 +66,9 @@ def get_node_widths(root: Node, margin: int=MARGIN):
         total_width = root.box.width
     else:
         for child in root.children:
-          total_width += get_node_widths(child)
+          total_width += get_node_widths(child, margin)
         # n children need n-1 spaces between them
-        total_width += get_margin(len(root.children))
+        total_width += get_margin(len(root.children), margin)
         # in case parent is wider than all children
         total_width = max(total_width, root.box.width)
     root.box.total_width = total_width
@@ -115,10 +116,7 @@ def position_nodes(root: Node, left_offset: int, top_offset: int, margin: int=MA
                 # want the left offset of the leftmost descendent of the prev
                 # sibling. This can be achieved by directly storing that value
                 child_left_offset = prev_child.box.tree_left_offset + margin + prev_child.box.total_width
-                # print('prev_child is {} w: {}, pos: {}'.format(prev_child, prev_child.box.total_width, prev_child.box.position))
             position_nodes(child, child_left_offset, child_top_offset, margin)
-            # print('In position_node: {} {}'.format(child, child.box.position))
-            # import pdb; pdb.set_trace()
         # compute self positions
         # place between first and last child
         first = root.children[0].box.position.left
@@ -128,18 +126,6 @@ def position_nodes(root: Node, left_offset: int, top_offset: int, margin: int=MA
     # store the left-offset of the space for the box and it's descendents
     root.box.tree_left_offset = left_offset
     return root.box.position
-
-
-def gen_ascii_nodes(root):
-    '''
-    Traverse tree and update `Node`.box with AsciiBox instance
-    '''
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        node.box = AsciiBox(node.val)
-        for child in node.children:
-            stack.append(child)
 
 
 def update_page_nums(page_map: dict, splits: List[Node]):
@@ -152,7 +138,7 @@ def update_page_nums(page_map: dict, splits: List[Node]):
             page_map[split].val = page_map[split].val.format(str(i))
 
 
-def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=SCREEN_WIDTH,
+def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=None,
                margin: int=MARGIN, show_page: bool=SHOW_CONT_DIALOG):
     '''
     split a tree that is too wide/tall.
@@ -174,11 +160,15 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=SCR
 
     TODO: implement turning off cont. on ... dialog
     '''
+    if first_max_width is None:
+        first_max_width = max_width
+
     # a child call will update a clone
     # we may want to update actual, especially when slicing the tree
     sroot = copy(root)
     splits = []
     child_splits = []  # inserted after splits on current level
+    # leave space for 3 digit page numbers
     msg_node = Node.init_with_box('Cont. on page {}  ')
     msg_node_copy = None
     # maximum width a single child can consume
@@ -189,7 +179,7 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=SCR
         if child.box.total_width > max_child_width:
             # recursively split child
             csplits, cpage_map = split_tree(child, max_width=max_width, first_max_width=max_child_width,
-                                            show_page=show_page)
+                                            margin=margin, show_page=show_page)
             # will get attached to sroot
             child = csplits[0]  # partitioned child
             # keep separated so these splits can be inserted after siblings
@@ -199,9 +189,9 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=SCR
         sroot.children.append(child)
         is_last_child = i == len(root.children) - 1
         if is_last_child:
-            new_width = recomp_node_width(sroot)
+            new_width = recomp_node_width(sroot, margin=margin)
         else:
-            new_width = recomp_node_width(sroot, add_on=msg_node)
+            new_width = recomp_node_width(sroot, add_on=msg_node, margin=margin)
 
         # handle different first_max_width and max_width
         if i == 0:
@@ -214,8 +204,8 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=SCR
             msg_node_copy = copy(msg_node)
             sroot.children.append(msg_node_copy)
             # recompute widths
-            get_node_widths(sroot)
-            position_nodes(sroot, 0, 0)
+            get_node_widths(sroot, margin)
+            position_nodes(sroot, 0, 0, margin)
             splits.append(sroot)
             # handle new childs
             sroot = copy(sroot)
@@ -224,36 +214,35 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=SCR
 
     page_map[sroot] = msg_node_copy
     get_node_widths(sroot)
-    position_nodes(sroot, 0, 0)
+    position_nodes(sroot, 0, 0, margin)
     splits.append(sroot)
     splits.extend(child_splits)
     return splits, page_map
 
 
-def draw_tree(root)->List[List[List[str]]]:
+def draw_tree(root, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding: int=PADDING)->List[List[List[str]]]:
     '''
     Draw Ascii tree repr of root.
     Return a list of screen objects with chunks of tree.
     '''
     screens = []
-    gen_ascii_nodes(root)
     get_node_widths(root)
-    if root.box.total_width <= SCREEN_WIDTH:
+    if root.box.total_width <= screen_width:
         # set screen height to be height of tree
-        screen_height = get_tree_height(root)
+        screen_height = get_tree_height(root, margin)
         # construct screen buffer
-        screen = [[' ']*SCREEN_WIDTH for _ in range(screen_height)]
-        position_nodes(root, 0, 0)
-        draw(screen, root)
+        screen = [[' ']*screen_width for _ in range(screen_height)]
+        position_nodes(root, 0, 0, margin)
+        draw(screen, root, padding)
         screens.append(screen)
     else:
         # if tree is too wide, split the tree
-        splits, page_map = split_tree(root)
+        splits, page_map = split_tree(root, max_width=screen_width, margin=margin)
         update_page_nums(page_map, splits)
         for sroot in splits:
-            screen_height = get_tree_height(sroot)
-            screen = [[' ']*SCREEN_WIDTH for _ in range(screen_height)]
-            draw(screen, sroot)
+            screen_height = get_tree_height(sroot, margin)
+            screen = [[' ']*screen_width for _ in range(screen_height)]
+            draw(screen, sroot, padding)
             screens.append(screen)
 
     return screens
@@ -267,43 +256,14 @@ def print_screen(screen):
         print(''.join(row))
 
 
-def print_tree(root: Node):
+def print_tree(root: Node, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN):
     '''
     Output tree to stdout
     '''
-    screens = draw_tree(root)
+    screens = draw_tree(root, screen_width, margin)
     for i, screen in enumerate(screens):
         print('page: {}'.format(i))
         print_screen(screen)
+        # print page separator
         if i != len(screens)-1:
-            print('-'*SCREEN_WIDTH)
-
-
-
-if __name__ == '__main__':
-    root = Node('onomatopaie'*10)
-    root.children = [Node('boobar'), Node('car'), Node('scuba'), Node('tarzanman'), Node('spandan'), Node('abcdccd')] # , Node('sadgshdd'), Node('saddsddadadadadaa')]
-    root.children[-1].children = [Node('navreet'), Node('smartcat'*20), Node('amcdcdcs dfdfdfsfdfsdffsdfsfsfsfssfs')]
-    root.children[-1].children[0].children = [Node('fooobarsf'*10)]
-    root.children[-1].children[1].children = [Node('fooobarsf')]
-    root.children.append(Node('carbar'))
-
-    # this produces an empty imput
-    root3 = Node('cloner '*20)
-    for i in range(6):
-        root3.children.append(Node(str(i)*50))
-
-    root2 = Node('c'*10)
-    for i in range(7):
-        root2.children.append(Node(str(i)*10))
-    for i in range(5):    root2.children[2].children.append(Node(str(i*10)*10))
-
-    root4 = Node('R'*10)
-    root4.children = [Node('c1'*10)]
-    for i in range(9):
-        root4.children[0].children.append(Node(str(i)*10))
-    root4.children.append(Node('c2'*10))
-    for i in range(3, 8):
-        root4.children.append(Node('c'+str(i)))
-
-    print_tree(root)
+            print('-'*screen_width)

@@ -1,4 +1,3 @@
-
 SCREEN_WIDTH = 180
 MARGIN = 5  # space between nodes
 PADDING = 1  # space between node body and node walls

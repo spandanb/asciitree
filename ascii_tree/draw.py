@@ -106,7 +106,7 @@ def draw_edge(screen, src: Node, dest: Node):
             screen[i][dest_x] = '|'
 
 
-def draw(screen: List[List[str]], root: Node):
+def draw(screen: List[List[str]], root: Node, padding: int=PADDING):
     '''
     traverse tree and draw nodes and edges
     '''
@@ -115,7 +115,7 @@ def draw(screen: List[List[str]], root: Node):
         node = stack.pop()
         left_bound, top_bound = node.box.position
         box_width, line_width = node.box.box_width, node.box.line_width
-        draw_node(screen, node.val, left_bound, top_bound, box_width, line_width)
+        draw_node(screen, node.val, left_bound, top_bound, box_width, line_width, padding)
         for child in node.children:
             # order doesn't matter since each node is drawn independently
             stack.append(child)
