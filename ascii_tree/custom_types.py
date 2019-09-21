@@ -1,7 +1,7 @@
 import math
 from collections import namedtuple, deque
 from copy import copy
-from .constants import PADDING, BOX_MAX_WIDTH
+from .params import PADDING, BOX_MAX_WIDTH
 
 # position offset
 Offset = namedtuple('Offset', 'left top')

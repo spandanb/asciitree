@@ -2,7 +2,7 @@
 Functions for drawing
 '''
 from typing import List
-from .constants import PADDING
+from .params import PADDING
 from .custom_types import Node, Offset
 
 

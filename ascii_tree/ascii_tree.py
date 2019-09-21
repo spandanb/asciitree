@@ -12,7 +12,7 @@ be placed on the screen.
 import math
 from copy import copy
 from typing import List, Callable
-from .constants import SCREEN_WIDTH, MARGIN, PADDING, SHOW_CONT_DIALOG
+from .params import SCREEN_WIDTH, MARGIN, PADDING, SHOW_CONT_DIALOG
 from .custom_types import Node, Offset, AsciiBox
 from .draw import draw
 
