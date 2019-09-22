@@ -80,6 +80,44 @@ page: 0
 |    |    |    |    |    |    |    |
 ------    ------    ------    ------
 ```
+```
+>>> class NTreeNode:
+... def __init__(self, val):
+...     self.val = val
+...     self.children = []
+
+>>> make_and_print_tree(root2, lambda n: n.val, lambda n: n.children)
+page: 0
+                         ---------------------                                                                          
+                         |                   |                                                                          
+                         | Lorem ipsum dolo  |                                                                          
+                      ---- r sit amet        ----------------------------                                               
+                      |  |                   |                          |                                               
+                      |  ---------------------                          |                                               
+                      |                                                 |                                               
+                      |                                                 |                                               
+                      |                                                 |                                               
+                      |                                                 |                                               
+                      |                                                 |                                               
+            ---------------------                             ---------------------                                     
+            |                   |                             |                   |                                     
+            | consectetur adip  |                             | Etiam laoreet co  |                                     
+          --- iscing elit.      ----                        --- ngue              ----                                  
+          | |                   |  |                        | |                   |  |                                  
+          | ---------------------  |                        | ---------------------  |                                  
+          |                        |                        |                        |                                  
+          |                        |                        |                        |                                  
+          |                        |                        |                        |                                  
+          |                        |                        |                        |                                  
+          |                        |                        |                        |                                  
+---------------------    ---------------------    ---------------------    ---------------------                        
+|                   |    |                   |    |                   |    |                   |                        
+| Pellentesque fin  |    | ante aliquet ull  |    | Morbi porta, dia  |    | neque eros biben  |                        
+| ibus metus eget   |    | amcorper          |    | m at imperdiet v  |    | dum tortor, quis  |                        
+|                   |    |                   |    | enenatis          |    |                   |                        
+---------------------    ---------------------    |                   |    ---------------------                        
+                                                  ---------------------                                                 
+```
 
 Currently the screen width (the maximum character width assumed by the tree) is `180`.
 This can be updated like:
