@@ -63,8 +63,7 @@ class AsciiBox:
             self.box_dims(text, box_max_width, padding)
         # width of tree rooted at node
         # should be updated with a get_node_widths
-        # TODO: update to tree_width
-        self.total_width = self.box_width
+        self.tree_width = self.box_width
         # top-left corner of this box's position
         self.position = None
         # left-offset of tree rooted at this node

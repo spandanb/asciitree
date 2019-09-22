@@ -21,7 +21,6 @@ def get_margin(node_count: int, margin: int=MARGIN)->float:
     '''
     determine the amount of margin for node_count
     '''
-    # return config.margin*(node_count-1)
     return margin*(node_count-1)
 
 
@@ -38,10 +37,10 @@ def recomp_node_width(root: Node, add_on: Node=None, margin: int=MARGIN)->int:
         return root.box.width
 
     if add_on:
-        total_width = sum(child.box.total_width for child in root.children) + \
-            + get_margin(len(root.children) + 1, margin) + add_on.box.total_width
+        total_width = sum(child.box.tree_width for child in root.children) + \
+            + get_margin(len(root.children) + 1, margin) + add_on.box.tree_width
     else:
-        total_width = sum(child.box.total_width for child in root.children) + \
+        total_width = sum(child.box.tree_width for child in root.children) + \
             + get_margin(len(root.children), margin)
 
     total_width = max(total_width, root.box.width)
@@ -71,7 +70,7 @@ def get_node_widths(root: Node, margin: int=MARGIN):
         total_width += get_margin(len(root.children), margin)
         # in case parent is wider than all children
         total_width = max(total_width, root.box.width)
-    root.box.total_width = total_width
+    root.box.tree_width = total_width
     return total_width
 
 
@@ -115,7 +114,7 @@ def position_nodes(root: Node, left_offset: int, top_offset: int, margin: int=MA
                 # in the middle of its children and its offset will shifted to right
                 # want the left offset of the leftmost descendent of the prev
                 # sibling. This can be achieved by directly storing that value
-                child_left_offset = prev_child.box.tree_left_offset + margin + prev_child.box.total_width
+                child_left_offset = prev_child.box.tree_left_offset + margin + prev_child.box.tree_width
             position_nodes(child, child_left_offset, child_top_offset, margin)
         # compute self positions
         # place between first and last child
@@ -176,7 +175,7 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=Non
     # map root to msg_node
     page_map = {}
     for i, child in enumerate(root.children):
-        if child.box.total_width > max_child_width:
+        if child.box.tree_width > max_child_width:
             # recursively split child
             csplits, cpage_map = split_tree(child, max_width=max_width, first_max_width=max_child_width,
                                             margin=margin, show_page=show_page)
@@ -227,7 +226,7 @@ def draw_tree(root, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding:
     '''
     screens = []
     get_node_widths(root)
-    if root.box.total_width <= screen_width:
+    if root.box.tree_width <= screen_width:
         # set screen height to be height of tree
         screen_height = get_tree_height(root, margin)
         # construct screen buffer
