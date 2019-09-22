@@ -3,23 +3,13 @@ Ascii Tree
 
 Generate beautiful ascii trees.
 
-Boxes/nodes can have be upto max width, beyond which
-their contents are wrapped.
-
-If a tree is too wide, then it is split at a node.
-Practically, this means that some children go one side
-of the split, and the rest on the other side.
-When a node is split, an information box is added as
-a child to the node, which shows the page number where tree is continued.
-
 Installation
 ============
 `git clone ...`
 
-`cd ....`
+`cd ...`
 
 `python3 setup.py install`
-
 
 Usage
 =====
@@ -40,7 +30,6 @@ We can extract it's value and children like
 ```
 def get_value(node):
     return node.value
-
 
 def get_children(node):
     children = []
@@ -64,7 +53,6 @@ Now we can print this as an ascii tree like
 ```
 >>> from ascii_tree import make_and_print_tree
 >>> make_and_print_tree(root, get_value, get_children)
->>>
 page: 0
           ------
           |    |
@@ -93,8 +81,29 @@ page: 0
 ------    ------    ------    ------
 ```
 
+Currently the screen width (the maximum character width assumed by the tree) is `180`.
+This can be updated like:
+```
+>>> from ascii_tree import update_param
+>>> update_param('screen_width', 120)
+>>> make_and_print_tree(root, get_value, get_children)
+```
+
+These params can be updated thus: `screen_width`, `margin` (distance between nodes),
+`padding` (distance between box contents and border) and `box_max_width`.
+
 See more examples [here](./examples)
 
 Notes
 =====
-- only supports `python3`
+- Only supports `python3`
+
+- Boxes/nodes can have be upto max width, beyond which
+their contents are wrapped.
+
+- If a tree is too wide, then it is split at a node.
+Practically, this means that some children go one side
+of the split, and the rest on the other side.
+When a node is split, an information box is added as
+a child to the node, which shows the page number where tree is continued.
+
