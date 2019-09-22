@@ -92,7 +92,9 @@ This can be updated like:
 These params can be updated thus: `screen_width`, `margin` (distance between nodes),
 `padding` (distance between box contents and border) and `box_max_width`.
 
-See more examples [here](./examples)
+See more examples [here](./examples).
+
+The [call_graph](https://github.com/spandanb/call_graph) library uses `ascii_tree` to print call graphs.
 
 Notes
 =====
