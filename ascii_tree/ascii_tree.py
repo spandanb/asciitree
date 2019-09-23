@@ -196,7 +196,7 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=Non
         if i == 0:
             alloc_width = first_max_width
         else:
-            alloc_with = max_width
+            alloc_width = max_width
 
         if new_width > alloc_width:
             sroot.children.pop()
@@ -265,4 +265,4 @@ def print_tree(root: Node, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN):
         print_screen(screen)
         # print page separator
         if i != len(screens)-1:
-            print('-'*screen_width)
+            print('─'*screen_width)
