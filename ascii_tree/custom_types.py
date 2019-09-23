@@ -8,6 +8,9 @@ Offset = namedtuple('Offset', 'left top')
 
 
 class Node:
+    '''
+    Representing a node of the user tree
+    '''
     def __init__(self, val):
         self.val = str(val)
         self.children = deque()
@@ -47,7 +50,7 @@ class Node:
 class AsciiBox:
     '''
     Holds parameters associated with drawing
-    ascii box for some block of text.
+    ascii box containing some text.
     '''
     def __init__(self, text: str, box_max_width: int=BOX_MAX_WIDTH, padding: int=PADDING):
         self.text = text
@@ -62,13 +65,13 @@ class AsciiBox:
         self.box_width, self.line_width, self.box_height, self.content_height = \
             self.box_dims(text, box_max_width, padding)
         # width of tree rooted at node
-        # should be updated with a get_node_widths
+        # this must be updated for non-leaf nodes
         self.tree_width = self.box_width
         # top-left corner of this box's position
         self.position = None
         # left-offset of tree rooted at this node
-        # i.e. the left offset of space reserved for this node
-        # and it's descendents.
+        # i.e. the left offset of rectangular box
+        # consumed by this node and it's descendents.
         self.tree_left_offset = None
 
     def __repr__(self):
@@ -80,8 +83,11 @@ class AsciiBox:
 
     def box_dims(self, text: str, box_max_width: int, padding: int):
         '''
-        determine the box_width (width including border chars)
-        and the line_width (number of text chars)
+        determine the box dimensions, i.e.
+        box_width (width including border chars)
+        line_width (number of text chars)
+        box_height (height including border chars)
+        content_height (lines of wrapped text)
         '''
         # max text per line; each line has 2 paddings and 2 border chars
         max_line_width = box_max_width - 2*padding - 2
