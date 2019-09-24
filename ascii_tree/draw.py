@@ -150,3 +150,10 @@ def draw(screen: List[List[str]], root: Node, padding: int=PADDING, charset=char
     # adding outgoing protrusion chars on box
     for node, child in edges:
         draw_edge(screen, node, child, charset)
+
+
+def draw_line(width, charset=charsets.Unicode)->str:
+    '''
+    draw line
+    '''
+    return charset.xside*width

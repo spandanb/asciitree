@@ -1,13 +1,14 @@
 '''
 Utilities for external interactions
 '''
+from . import charsets
 from typing import Callable, Any, List
 from .ascii_tree import print_tree
 from .custom_types import Node
 
 
 # params may overlap
-SCREEN_PARAM_NAMES = ['screen_width', 'margin', 'padding']
+SCREEN_PARAM_NAMES = ['screen_width', 'margin', 'padding', 'charset']
 BOX_PARAM_NAMES = ['padding', 'box_max_width']
 # updated param values
 _screen_params = {}
@@ -35,11 +36,24 @@ def make_and_print_tree(root: Any, get_val: Callable[[Any], Any], get_children: 
     print_tree(transformed_tree(root, get_val, get_children), **_screen_params)
 
 
+def transform_param(param, val):
+    '''
+    some params value need to be transformed
+    '''
+    if param == 'charset':
+        if val.lower() == 'unicode':
+            return charsets.Unicode
+        return charsets.Ascii
+
+    return val
+
+
 def update_param(param: str, new_val):
     '''
     updates param dict
     '''
     param = param.lower()
+    new_val = transform_param(param, new_val)
     if param in SCREEN_PARAM_NAMES:
         _screen_params[param] = new_val
         print(f'{param} updated to {new_val}')

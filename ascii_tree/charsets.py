@@ -7,7 +7,7 @@ all chars sets will need to define all types separately.
 '''
 
 class Charset:
-    def __init__(self, xside=None, yside=None, top=None, bottom=None, left=None, right=None,
+    def __init__(self, name=None, xside=None, yside=None, top=None, bottom=None, left=None, right=None,
                  top_left=None, top_right=None, bottom_left=None, bottom_right=None, top_out=None,
                  bottom_out=None, left_out=None, right_out=None):
         '''
@@ -34,6 +34,7 @@ class Charset:
            (left is None or right is None or top is None or bottom is None):
             raise ValueError('Underdefined character set')
 
+        self.name = str(name)
         self.xside = xside or top
         self.yside = yside or left
         self.top = top or xside
@@ -50,8 +51,9 @@ class Charset:
         self.left_out = left_out or yside
         self.right_out = right_out or yside
 
+    def __str__(self):
+        return self.name
 
-
-Ascii = Charset(xside='-', yside='|')
-Unicode = Charset(xside='─', yside='│', top_left='┌', top_right='┐', bottom_left='└', bottom_right='┘',
+Ascii = Charset(name='ascii', xside='-', yside='|')
+Unicode = Charset(name='unicode', xside='─', yside='│', top_left='┌', top_right='┐', bottom_left='└', bottom_right='┘',
                   left_out='┤', right_out='├', top_out='┴', bottom_out='┬')

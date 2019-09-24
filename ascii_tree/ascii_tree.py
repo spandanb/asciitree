@@ -9,12 +9,14 @@ configuration allows most objects to
 be placed on the screen.
 
 '''
+
 import math
 from copy import copy
 from typing import List, Callable
+from . import charsets
 from .params import SCREEN_WIDTH, MARGIN, PADDING, SHOW_CONT_DIALOG
 from .custom_types import Node, Offset, AsciiBox
-from .draw import draw
+from .draw import draw, draw_line
 
 
 def get_margin(node_count: int, margin: int=MARGIN)->float:
@@ -219,7 +221,8 @@ def split_tree(root: Node, max_width: int=SCREEN_WIDTH, first_max_width: int=Non
     return splits, page_map
 
 
-def draw_tree(root, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding: int=PADDING)->List[List[List[str]]]:
+def draw_tree(root, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding: int=PADDING,
+              charset=charsets.Unicode)->List[List[List[str]]]:
     '''
     Draw Ascii tree repr of root.
     Return a list of screen objects with chunks of tree.
@@ -232,7 +235,7 @@ def draw_tree(root, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding:
         # construct screen buffer
         screen = [[' ']*screen_width for _ in range(screen_height)]
         position_nodes(root, 0, 0, margin)
-        draw(screen, root, padding)
+        draw(screen, root, padding, charset)
         screens.append(screen)
     else:
         # if tree is too wide, split the tree
@@ -241,7 +244,7 @@ def draw_tree(root, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding:
         for sroot in splits:
             screen_height = get_tree_height(sroot, margin)
             screen = [[' ']*screen_width for _ in range(screen_height)]
-            draw(screen, sroot, padding)
+            draw(screen, sroot, padding, charset)
             screens.append(screen)
 
     return screens
@@ -255,14 +258,15 @@ def print_screen(screen):
         print(''.join(row))
 
 
-def print_tree(root: Node, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN):
+def print_tree(root: Node, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding: int=PADDING,
+               charset=charsets.Unicode):
     '''
     Output tree to stdout
     '''
-    screens = draw_tree(root, screen_width, margin)
+    screens = draw_tree(root, screen_width, margin, padding, charset)
     for i, screen in enumerate(screens):
         print('page: {}'.format(i))
         print_screen(screen)
         # print page separator
         if i != len(screens)-1:
-            print('-'*screen_width)
+            print(draw_line(screen_width, charset))
