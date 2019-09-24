@@ -16,107 +16,119 @@ Usage
 This library can print **arbitrary** trees. This requires
 you to specify how the value of a node, and list
 of it's children can be extracted from the node object.
-For example, consider the following binary tree node class
+For example, consider the following n-ary tree node class
 ```
-class BinaryTreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
-
+>>> class NTreeNode:
+...    def __init__(self, val):
+...        self.val = val
+...        self.children = []
 ```
 We can extract it's value and children like
 
 ```
-def get_value(node):
-    return node.value
-
-def get_children(node):
-    children = []
-    if node.left:
-        children.append(node.left)
-    if node.right:
-        children.append(node.right)
-    return children
+>>> def get_value(node):
+...     return node.value
+...
+>>> def get_children(node):
+...     return node.children
+...
 ```
-First we'll construct a dummy tree.
+First, we'll construct a dummy tree.
 ```
-root = BinaryTreeNode(1)
-root.left = BinaryTreeNode(2)
-root.right = BinaryTreeNode(3)
-root.left.left = BinaryTreeNode(4)
-root.left.right = BinaryTreeNode(5)
-root.right.left = BinaryTreeNode(6)
-root.right.right = BinaryTreeNode(7)
+>>> root = NTreeNode('Lorem ipsum dolor sit amet')
+>>> root.children = [NTreeNode('consectetur adipiscing elit.'), NTreeNode('Etiam laoreet congue')]
+>>> root.children[0].children = [NTreeNode('Pellentesque finibus metus eget'), NTreeNode('ante aliquet ullamcorper')]
+>>> root.children[1].children = [NTreeNode('Morbi porta, diam at imperdiet venenatis'),  NTreeNode('neque eros bibendum tortor, quis')]
 ```
 Now we can print this as an ascii tree like
 ```
 >>> from ascii_tree import make_and_print_tree
 >>> make_and_print_tree(root, get_value, get_children)
 page: 0
-          ------
-          |    |
-       ---- 1  -------------
-       |  |    |           |
-       |  ------           |
-       |                   |
-       |                   |
-       |                   |
-       |                   |
-       |                   |
-     ------              ------
-     |    |              |    |
-  ---- 2  ---         ---- 3  ---
-  |  |    | |         |  |    | |
-  |  ------ |         |  ------ |
-  |         |         |         |
-  |         |         |         |
-  |         |         |         |
-  |         |         |         |
-  |         |         |         |
-------    ------    ------    ------
-|    |    |    |    |    |    |    |
-| 4  |    | 5  |    | 6  |    | 7  |
-|    |    |    |    |    |    |    |
-------    ------    ------    ------
+                            ┌───────────────────┐                                                                       
+                            │                   │                                                                       
+                            │ Lorem ipsum dolo  │                                                                       
+                            │ r sit amet        ├────────────────────────────────────┐                                  
+                            │                   │                                    │                                  
+                            └┬──────────────────┘                                    │                                  
+                             │                                                       │                                  
+                             │                                                       │                                  
+                             │                                                       │                                  
+                             │                                                       │                                  
+                             │                                                       │                                  
+                   ┌─────────┴─────────┐                                   ┌─────────┴─────────┐                        
+                   │                   │                                   │                   │                        
+                   │ consectetur adip  │                                   │ Etiam laoreet co  │                        
+                   │ iscing elit.      ├────────────────────┐              │ ngue              │                        
+                   │                   │                    │              │                   │                        
+                   └──┬────────────────┘                    │              └───────────────────┘                        
+                      │                                     │                                                           
+                      │                                     │                                                           
+                      │                                     │                                                           
+                      │                                     │                                                           
+                      │                                     │                                                           
+            ┌─────────┴─────────┐                 ┌─────────┴─────────┐                                                 
+            │                   │                 │                   │                                                 
+            │ Pellentesque fin  │                 │ ante aliquet ull  │                                                 
+          ┌─┤ ibus metus eget   ├──┐              │ amcorper          │                                                 
+          │ │                   │  │              │                   │                                                 
+          │ └───────────────────┘  │              └───────────────────┘                                                 
+          │                        │                                                                                    
+          │                        │                                                                                    
+          │                        │                                                                                    
+          │                        │                                                                                    
+          │                        │                                                                                    
+┌─────────┴─────────┐    ┌─────────┴─────────┐                                                                          
+│                   │    │                   │                                                                          
+│ Sed nec nibh cur  │    │ volutpat lacus a  │                                                                          
+│ sus               │    │ t, euismod mi     │                                                                          
+│                   │    │                   │                                                                          
+└───────────────────┘    └───────────────────┘                                                                          
 ```
+We can also print the tree using only ascii characters like:
 ```
->>> class NTreeNode:
-... def __init__(self, val):
-...     self.val = val
-...     self.children = []
-
->>> make_and_print_tree(root2, lambda n: n.val, lambda n: n.children)
+>>> update_param('charset', 'ascii')
+>>> make_and_print_tree(root, lambda n: n.val, lambda n: n.children)
 page: 0
-                         ---------------------                                                                          
-                         |                   |                                                                          
-                         | Lorem ipsum dolo  |                                                                          
-                      ---- r sit amet        ----------------------------                                               
-                      |  |                   |                          |                                               
-                      |  ---------------------                          |                                               
-                      |                                                 |                                               
-                      |                                                 |                                               
-                      |                                                 |                                               
-                      |                                                 |                                               
-                      |                                                 |                                               
-            ---------------------                             ---------------------                                     
-            |                   |                             |                   |                                     
-            | consectetur adip  |                             | Etiam laoreet co  |                                     
-          --- iscing elit.      ----                        --- ngue              ----                                  
-          | |                   |  |                        | |                   |  |                                  
-          | ---------------------  |                        | ---------------------  |                                  
-          |                        |                        |                        |                                  
-          |                        |                        |                        |                                  
-          |                        |                        |                        |                                  
-          |                        |                        |                        |                                  
-          |                        |                        |                        |                                  
----------------------    ---------------------    ---------------------    ---------------------                        
-|                   |    |                   |    |                   |    |                   |                        
-| Pellentesque fin  |    | ante aliquet ull  |    | Morbi porta, dia  |    | neque eros biben  |                        
-| ibus metus eget   |    | amcorper          |    | m at imperdiet v  |    | dum tortor, quis  |                        
-|                   |    |                   |    | enenatis          |    |                   |                        
----------------------    ---------------------    |                   |    ---------------------                        
-                                                  ---------------------                                                 
+                            ---------------------                                                                       
+                            |                   |                                                                       
+                            | Lorem ipsum dolo  |                                                                       
+                            | r sit amet        |-------------------------------------                                  
+                            |                   |                                    |                                  
+                            ---------------------                                    |                                  
+                             |                                                       |                                  
+                             |                                                       |                                  
+                             |                                                       |                                  
+                             |                                                       |                                  
+                             |                                                       |                                  
+                   ---------------------                                   ---------------------                        
+                   |                   |                                   |                   |                        
+                   | consectetur adip  |                                   | Etiam laoreet co  |                        
+                   | iscing elit.      |---------------------              | ngue              |                        
+                   |                   |                    |              |                   |                        
+                   ---------------------                    |              ---------------------                        
+                      |                                     |                                                           
+                      |                                     |                                                           
+                      |                                     |                                                           
+                      |                                     |                                                           
+                      |                                     |                                                           
+            ---------------------                 ---------------------                                                 
+            |                   |                 |                   |                                                 
+            | Pellentesque fin  |                 | ante aliquet ull  |                                                 
+          --| ibus metus eget   |---              | amcorper          |                                                 
+          | |                   |  |              |                   |                                                 
+          | ---------------------  |              ---------------------                                                 
+          |                        |                                                                                    
+          |                        |                                                                                    
+          |                        |                                                                                    
+          |                        |                                                                                    
+          |                        |                                                                                    
+---------------------    ---------------------                                                                          
+|                   |    |                   |                                                                          
+| Sed nec nibh cur  |    | volutpat lacus a  |                                                                          
+| sus               |    | t, euismod mi     |                                                                          
+|                   |    |                   |                                                                          
+---------------------    ---------------------                                                                          
 ```
 
 Currently the screen width (the maximum character width assumed by the tree) is `180`.
