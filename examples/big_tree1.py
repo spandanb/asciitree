@@ -1,5 +1,5 @@
 from ascii_tree import make_and_print_tree
-from big_tree import  NTreeNode
+from node_types import  NTreeNode
 
 '''
 Now make it ever wider, such that it can't fit on the screen.

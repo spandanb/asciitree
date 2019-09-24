@@ -6,13 +6,7 @@ For this we'll use the following.
 '''
 
 from ascii_tree import transformed_tree, print_tree
-
-
-class BinaryTreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
+from node_types import BinaryTreeNode
 
 
 '''

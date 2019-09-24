@@ -4,12 +4,8 @@ pages and printed over multiple pages.
 First let's construct a big tree.
 '''
 from ascii_tree import make_and_print_tree
+from node_types import NTreeNode
 
-
-class NTreeNode:
-    def __init__(self, val):
-        self.val = val
-        self.children = []
 
 '''
 First generate a really wide tree
