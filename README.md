@@ -54,7 +54,7 @@ First, we'll construct a dummy tree.
 >>> root.children[0].children = [NTreeNode('Pellentesque finibus metus eget'), NTreeNode('ante aliquet ullamcorper')]
 >>> root.children[1].children = [NTreeNode('Morbi porta, diam at imperdiet venenatis'),  NTreeNode('neque eros bibendum tortor, quis')]
 ```
-Now we can print this as an ascii tree like
+Now we can print this as an ascii (the library originally only used ascii characters) tree like
 ```
 >>> from ascii_tree import make_and_print_tree
 >>> make_and_print_tree(root, get_value, get_children)
@@ -172,4 +172,3 @@ Practically, this means that some children go one side
 of the split, and the rest on the other side.
 When a node is split, an information box is added as
 a child to the node, which shows the page number where tree is continued.
-

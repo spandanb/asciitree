@@ -1,9 +1,5 @@
 '''
-parametrize character sets
-Each char set can have: box top-char, side char, corner chars
-possibly connection points etc.
-Should have a sensible way of picking chars since not
-all chars sets will need to define all types separately.
+different characters to draw the ascii tree with
 '''
 
 class Charset:
@@ -13,7 +9,7 @@ class Charset:
         '''
         Accepts characters for different elements of the box.
         Minimally, (xside, yside) or (top, left, bottom, right)
-        must be specified. The rest are intended to allow  finer control.
+        must be specified. The rest are intended to allow finer control.
 
         xside: character to use for top and bottom, i.e. along x-axis
         yside: character to use for left and right, i.e. along y-axis

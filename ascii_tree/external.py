@@ -38,7 +38,7 @@ def make_and_print_tree(root: Any, get_val: Callable[[Any], Any], get_children: 
 
 def transform_param(param, val):
     '''
-    some params value need to be transformed
+    some param value need to be transformed
     '''
     if param == 'charset':
         if val.lower() == 'unicode':

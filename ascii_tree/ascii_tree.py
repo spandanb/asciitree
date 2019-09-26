@@ -1,13 +1,7 @@
 '''
-Print tree of ascii boxes
-Currently does not stagger nodes, i.e.
-only works if all nodes on the same level
-can fit on the same level.
-
-Many ways to do this. It would be interesting to see which
-configuration allows most objects to
-be placed on the screen.
-
+Construct ascii tree and determine placement of tree
+onto page or possibly onto multiple pages if it's too
+big to fit on a single page.
 '''
 
 import math
@@ -255,7 +249,7 @@ def print_screen(screen):
     print each row of the screen
     '''
     for row in screen:
-        print(''.join(row))
+        print(''.join(row).rstrip())
 
 
 def print_tree(root: Node, screen_width: int=SCREEN_WIDTH, margin: int=MARGIN, padding: int=PADDING,
